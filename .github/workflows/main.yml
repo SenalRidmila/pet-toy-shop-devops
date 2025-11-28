@@ -9,10 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Code එක ගන්න
     - name: Checkout Code
       uses: actions/checkout@v3
 
-  
+    # 2. Java (JDK 17) Setup කරන්න
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -20,25 +21,25 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-   
+    # 3. Backend JAR එක හදන්න (Maven Build)
     - name: Build Application with Maven
       run: |
         cd backend
         chmod +x mvnw
         ./mvnw clean package -DskipTests
 
-   
+    # 4. Docker Hub එකට Log වෙන්න (ඔයා හදපු Secrets වලින්)
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    
+    # 5. Docker Setup
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    
+    # 6. Backend එක Build කරලා PUSH කරන්න
     - name: Build and Push Backend
       uses: docker/build-push-action@v4
       with:
@@ -46,7 +47,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/petshop-backend:latest
 
-    
+    # 7. Frontend එක Build කරලා PUSH කරන්න
     - name: Build and Push Frontend
       uses: docker/build-push-action@v4
       with:
