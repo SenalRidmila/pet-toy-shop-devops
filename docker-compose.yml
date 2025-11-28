@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database Service
+  mongodb:
+    image: mongo:latest
+    container_name: petshop-mongo
+    ports:
+      - "27017:27017"
+
+  # 2. Backend Service
+  backend:
+    build: ./backend
+    container_name: petshop-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    environment:
+      # Docker ඇතුලේ 'localhost' හරියන්නේ නෑ. අපි service name එක ('mongodb') පාවිච්චි කරන්න ඕන.
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/pet_toy_shop_db
+
+  # 3. Frontend Service
+  frontend:
+    build: ./frontend
+    container_name: petshop-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    stdin_open: true # React එක දිගටම run වෙන්න මේක ඕන
+    tty: true
