@@ -1,21 +1,18 @@
-name: Pet Shop CI Pipeline 🚀
+name: Pet Shop CI/CD Pipeline 🚀
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-   
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    
+  
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -23,21 +20,36 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+   
     - name: Build Application with Maven
       run: |
         cd backend
         chmod +x mvnw
         ./mvnw clean package -DskipTests
 
+   
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Build Backend Docker Image ☕
-      run: |
-        cd backend
-        docker build -t petshop-backend .
+    
+    - name: Build and Push Backend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/petshop-backend:latest
 
-    - name: Build Frontend Docker Image ⚛️
-      run: |
-        cd frontend
-        docker build -t petshop-frontend .
+    
+    - name: Build and Push Frontend
+      uses: docker/build-push-action@v4
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/petshop-frontend:latest
