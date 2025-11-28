@@ -45,7 +45,7 @@ jobs:
       with:
         context: ./backend
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/petshop-backend:latest
+        tags: ${{ secrets.DOCKER_USERNAME}}/petshop-backend:latest
 
     # 7. Frontend එක Build කරලා PUSH කරන්න
     - name: Build and Push Frontend
@@ -53,4 +53,4 @@ jobs:
       with:
         context: ./frontend
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/petshop-frontend:latest
+        tags: ${{ secrets.DOCKER_USERNAME}}/petshop-frontend:latest
